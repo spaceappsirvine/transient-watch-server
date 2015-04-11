@@ -13,10 +13,10 @@ class DataServer
 
   start: ->
     @tick()
-#    setInterval (=> @tick), 20000 # INTERVAL
+    setInterval (=> @tick), INTERVAL
 
 
-  tick: ->
+  tick: (callback = (->)) ->
     {port, hostname, pathname} = parse @source
     options =
       hostname: hostname
@@ -27,7 +27,7 @@ class DataServer
     req = http.request options, (res) =>
       data = ''
       res.on 'data', (chunk) -> data += chunk
-      res.on 'end', => @process data
+      res.on 'end', => callback @process data
     req.end()
 
   process: (data) ->
@@ -54,7 +54,7 @@ class DataServer
           when 12 then 'days'
           when 13 then 'lastdays'
         if cellIndex is 2
-          value = cell.find('a').text()
+          value = cell.find('a').text().replace /\ +(?= )/g, ''
         else
           value = cell.html()
         cellData[propertyName] = value.trim()

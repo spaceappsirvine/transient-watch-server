@@ -1,6 +1,6 @@
+DataServer = require './data_server.coffee'
 express = require 'express'
 fs = require 'fs'
-DataServer = require './data_server.coffee'
 
 
 class ApiServer
@@ -39,6 +39,7 @@ class ApiServer
       response.set 'Content-Type', 'text/html'
       response.send data
 
+
   _constructRoutes: ->
     @app.get '/', @root
     @app.get '/events', @events
@@ -49,7 +50,6 @@ class ApiServer
   _eventData: (callback) ->
     server = new DataServer 'http://swift.gsfc.nasa.gov/results/transients/BAT_current.html'
     server.tick callback
-
 
 
 module.exports = ApiServer

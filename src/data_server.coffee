@@ -1,22 +1,40 @@
 cheerio = require 'cheerio'
 http = require 'http'
+redis = require 'redis'
 {parse} = require 'url'
-{usleep} = require 'sleep'
 
 TIMEOUT = 5000 # 5 Second Timeout
 INTERVAL = 60 * 60 * 1000 # Hourly
+KEY_EVENT = 'events'
 
 class DataServer
 
   constructor: (@source) ->
+    @_initRedis()
 
 
   start: ->
     @tick()
-    setInterval (=> @tick), INTERVAL
+    setInterval (=> @tick (->), true), INTERVAL
 
 
-  tick: (callback = (->)) ->
+  tick: (callback = (->), refresh = false) ->
+    if refresh
+      @loadFromSource callback
+    else
+      @loadFromCache callback
+
+
+
+  loadFromCache: (callback) ->
+    @redis.get KEY_EVENT, (err, result) =>
+      if err? or not result
+        @loadFromSource callback
+      else
+        callback JSON.parse result
+
+
+  loadFromSource: (callback) ->
     {port, hostname, pathname} = parse @source
     options =
       hostname: hostname
@@ -60,6 +78,14 @@ class DataServer
         cellData[propertyName] = value.trim()
         cell = cell.next()
         structures.push cellData
+    @redis.set KEY_EVENT, JSON.stringify structures
     structures
+
+
+  _initRedis: ->
+    {port, hostname, auth} = parse process.env.REDISTOGO_URL
+    @redis = redis.createClient port, hostname
+    @redis.auth auth.split(":")[1]
+
 
 module.exports = DataServer

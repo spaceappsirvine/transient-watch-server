@@ -1,4 +1,6 @@
 express = require 'express'
+fs = require 'fs'
+
 
 class ApiServer
 
@@ -17,11 +19,14 @@ class ApiServer
 
 
   map: (request, response) ->
-    response.send 'serving a map'
-
+    fs.readFile 'public/map.html', (err, data) ->
+      throw err if (err)
+      response.set('Content-Type', 'text/html')
+      response.send(data)
 
   _constructRoutes: ->
     @app.get '/', @root
     @app.get '/map', @map
+
 
 module.exports = ApiServer

@@ -4,7 +4,8 @@
   "description": "API and Processing Servers for Transient Astronimical Annomolies.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "serve": "coffee server.coffee"
   },
   "repository": {
     "type": "git",

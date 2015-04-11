@@ -1,7 +1,7 @@
 ApiServer = require './src/api_server'
 DataServer = require './src/data_server'
 
-apiPort = process.env.SERVE_PORT or 8000
+apiPort = process.env.PORT or 8000
 dataSource = process.env.SOURCE or 'http://swift.gsfc.nasa.gov/results/transients/BAT_current.html'
 type = process.argv[2]
 

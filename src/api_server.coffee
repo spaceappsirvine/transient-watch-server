@@ -42,7 +42,7 @@ class ApiServer
         result ?= '[]'
         emails = JSON.parse result
         emails.push {email, lastSent: Date.now()}
-        @redis.set KEY_EMAILS, JSON.stringify(emails), ->
+        @redis.set KEY_EMAILS, JSON.stringify(emails), =>
           response.set 'Content-Type', 'application/json'
           response.send
             status: 'success'

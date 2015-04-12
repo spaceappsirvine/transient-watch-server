@@ -68,12 +68,16 @@ class ApiServer
       else
         url = "http://galactic-titans.herokuapp.com/map?location=#{request.query['location']}"
         options =
-          renderDelay: 5000
+          renderDelay: 3000
+          windowSize:
+            width: 800
+            height: 700
+          shotSize:
+            width: 500
+            height: 500
           shotOffset:
-            left: 100
-            right: 150
+            left: 150
             top: 100
-            bottom: 100
         webshot url, name, options, (err) ->
           unless err?
             response.download name

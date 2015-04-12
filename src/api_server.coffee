@@ -24,15 +24,12 @@ class ApiServer
   bookmark: (request, response) =>
     @_initRedis()
     {uuid, name} = request.body
-    console.log uuid
-    console.log name
     @redis.get uuid, (err, result) =>
       result ?= '[]'
       favorites = JSON.parse result
       favorites.push {name}
       @redis.set uuid, JSON.stringify favorites, =>
         @redis.quit()
-        response.set 'Content-Type', 'application/json'
         response.send
           status: 'success'
 
@@ -40,11 +37,9 @@ class ApiServer
   bookmarks: (request, response) =>
     @_initRedis()
     uuid = request.query['uuid']
-    console.log uuid
     @redis.get uuid, (err, result) =>
       @redis.quit()
       result ?= '[]'
-      response.set 'Content-Type', 'application/json'
       response.send
         status: 'success'
         data: JSON.parse result

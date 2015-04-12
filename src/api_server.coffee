@@ -4,7 +4,7 @@ express = require 'express'
 fs = require 'fs'
 redis = require 'redis'
 {parse} = require 'url'
-
+KEY_EMAILS = 'emails'
 
 class ApiServer
 
@@ -30,12 +30,18 @@ class ApiServer
 
   register: (request, response) ->
     {email} = request.body
-    notification = new Date()
-    @redis.set email, {email, notification}, ->
-      console.log 'User Registered!'
-      response.set 'Content-Type', 'application/json'
-      response.send
-        status: 'success'
+    @redis.get KEY_EMAILS, (err, result) ->
+      if err
+        response.set 'Content-Type', 'application/json'
+        response.send status: 'error', code: 500, message: 'Redis Unavailable'
+      else
+        result ?= '[]'
+        emails = JSON.parse result
+        emails.push {email, lastSent: Date.now()}
+        @redis.set KEY_EMAILS, JSON.stringify(emails), ->
+          response.set 'Content-Type', 'application/json'
+          response.send
+            status: 'success'
 
 
   root: (request, response) ->

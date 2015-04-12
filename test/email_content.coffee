@@ -43,5 +43,15 @@ describe 'EmailContent', ->
 
   describe '.getBodyWithData(data)', ->
     it 'should genrate the correct body', (done) ->
-      expect(emailContent.getBodyWithData(data, 50)).to.not.equal ""
+      expect(emailContent.getBodyWithData(data, 50)).to.equal """
+      New transient space events
+
+      Name: GX 339-4
+      Type: LMXB/BH
+      Right Ascention: 255.706
+      Declenation: -48.7900
+      Today: 140 ( 5.0)
+      Yesterday: 40 ( 5.0)
+
+      """
       done()

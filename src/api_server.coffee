@@ -37,15 +37,14 @@ class ApiServer
   bookmarks: (request, response) =>
     @_initRedis()
     {uuid} = request.query
-    console.log uuid
     @redis.get uuid, (err, result) =>
-      console.log err
-      console.log result
-      result ?= '[]'
-      response.send
-        status: 'success'
-        data: JSON.parse result
-      @redis.quit()
+      result = JSON.parse(result or '[]')
+      @_eventData (data) ->
+        final = (event for event in data for item in result when item.name is event.name)
+        response.send
+          status: 'success'
+          data: final
+        @redis.quit()
 
 
 

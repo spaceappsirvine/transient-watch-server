@@ -12,7 +12,7 @@ KEY_EVENT = 'events'
 
 class DataServer
 
-  constructor: (@source, @testing = false) ->
+  constructor: (@source, @redis, @testing = false) ->
     console.log 'Data Server Constructed'
     @emailContent = new EmailContent()
     @emailService = new EmailService()
@@ -31,7 +31,6 @@ class DataServer
 
   tick: (onSuccess = (->), refresh = false) ->
     console.log 'Data Server Tick'
-    @_initRedis()
     if refresh
       @loadFromSource onSuccess
     else
@@ -44,7 +43,6 @@ class DataServer
         @loadFromSource onSuccess
       else
         onSuccess JSON.parse result
-        @redis.quit()
 
 
   loadFromSource: (onSuccess) ->
@@ -82,7 +80,6 @@ class DataServer
     unless @testing
       @redis.set KEY_EVENT, JSON.stringify structures
       @mailUsers(structures)
-      @redis.quit()
 
     structures
 
@@ -113,13 +110,6 @@ class DataServer
       when 11 then 'peak'
       when 12 then 'days'
       when 13 then 'lastdays'
-
-
-
-  _initRedis: ->
-    {port, hostname, auth} = parse process.env.REDISTOGO_URL
-    @redis = redis.createClient port, hostname
-    @redis.auth auth.split(":")[1]
 
 
 module.exports = DataServer

@@ -10,7 +10,7 @@ KEY_EMAILS = 'emails'
 
 class ApiServer
 
-  constructor: (@port) ->
+  constructor: (@port, @redis) ->
     @app = express()
     @_constructRoutes()
 
@@ -21,7 +21,6 @@ class ApiServer
 
 
   bookmark: (request, response) =>
-    @_initRedis()
     {uuid, name} = request.body
     console.log uuid
     console.log name
@@ -32,11 +31,9 @@ class ApiServer
       @redis.set uuid, JSON.stringify(favorites), =>
         response.send
           status: 'success'
-        @redis.quit()
 
 
   bookmarks: (request, response) =>
-    @_initRedis()
     {uuid} = request.query
     @redis.get uuid, (err, result) =>
       result = JSON.parse(result or '[]')
@@ -49,7 +46,6 @@ class ApiServer
         response.send
           status: 'success'
           data: @removeDuplicates final
-        @redis.quit()
 
 
   removeDuplicates: (ar) ->
@@ -72,12 +68,10 @@ class ApiServer
 
   register: (request, response) =>
     {email} = request.body
-    @_initRedis()
     @redis.get KEY_EMAILS, (err, result) =>
       if err
         response.set 'Content-Type', 'application/json'
         response.send status: 'error', code: 500, message: 'Redis Unavailable'
-        @redis.quit()
       else
         result ?= '[]'
         emails = JSON.parse result
@@ -86,7 +80,6 @@ class ApiServer
           response.set 'Content-Type', 'application/json'
           response.send
             status: 'success'
-          @redis.quit()
 
 
   root: (request, response) ->
@@ -136,14 +129,7 @@ class ApiServer
 
 
   _eventData: (onSuccess) ->
-    server = new DataServer 'http://swift.gsfc.nasa.gov/results/transients/BAT_current.html'
+    server = new DataServer 'http://swift.gsfc.nasa.gov/results/transients/BAT_current.html', @redis
     server.tick onSuccess
-
-
-  _initRedis: ->
-    {port, hostname, auth} = parse process.env.REDISTOGO_URL
-    @redis = redis.createClient port, hostname
-    @redis.auth auth.split(":")[1]
-
 
 module.exports = ApiServer

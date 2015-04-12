@@ -76,7 +76,7 @@ class DataServer
         cell = cell.next()
       structures.push cellData if cellData.name
     @redis.set KEY_EVENT, JSON.stringify structures
-    @redis.close()
+    @redis.quit()
     structures
 
 

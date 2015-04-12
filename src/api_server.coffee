@@ -35,7 +35,7 @@ class ApiServer
       if err
         response.set 'Content-Type', 'application/json'
         response.send status: 'error', code: 500, message: 'Redis Unavailable'
-        @redis.close()
+        @redis.quit()
       else
         result ?= '[]'
         emails = JSON.parse result
@@ -44,7 +44,7 @@ class ApiServer
           response.set 'Content-Type', 'application/json'
           response.send
             status: 'success'
-          @redis.close()
+          @redis.quit()
 
 
   root: (request, response) ->

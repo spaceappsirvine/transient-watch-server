@@ -2,15 +2,19 @@ cheerio = require 'cheerio'
 http = require 'http'
 redis = require 'redis'
 {parse} = require 'url'
+EmailContent = require './email_content'
+EmailService = require './email_service'
 
 TIMEOUT = 5000 # 5 Second Timeout
-INTERVAL = 60 * 60 * 1000 # Hourly
+INTERVAL = 60 * 60 * 1000 # 1 Hour
+ONE_DAY = 24 * 60 * 60 * 1000 # 1 Day
 KEY_EVENT = 'events'
-
 
 class DataServer
 
   constructor: (@source) ->
+    @emailContent = new EmailContent()
+    @emailService = new EmailService()
 
   start: ->
     @tick (->), true
@@ -65,7 +69,7 @@ class DataServer
       structures.push cellData if cellData.name
     @redis.set KEY_EVENT, JSON.stringify structures
     @redis.quit()
-    if Date.now() - @lastSent > 24 * 60 * 60 * 1000
+    if Date.now() - @lastSent > ONE_DAY
       @lastSent = Date.now()
       @mailUsers(structures)
     structures
@@ -77,12 +81,10 @@ class DataServer
   mailUsers: (data) ->
     @redis.get 'emails', (result) ->
       emails = JSON.parse result
-      subject = "Updates for " + Notification.getDateString()
-      text = EmailContent.generate(data)
-      callback = (err) -> 
-        err && console.log(err)
-      for user in emails when x 
-        Notification.notify(user.email, subject, text, callback)
+      subject = @emailContent.getSubject @emailService.getDateString()
+      body = @emailContent.getBodyWithData data
+      for user in emails
+        @emailService.send user.email, subject, body
 
 
   _propertyForIndex: (index) ->

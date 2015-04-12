@@ -1,29 +1,29 @@
 
 class EmailContent
 
-  #generate: (data) ->
+  getSubject: (date) ->
+    "Updates for #{date}"
 
-    output = "New transient space events!"
 
-    for item in data
-      filtered = []
-      threshold = # 30;
-      criterion = # today-yesterday
+  getBodyWithData: (data, threshold = 100) ->
+    filtered = item for item in data when Math.abs(item.today - item.yesterday) > threshold
+    infoArray = for item in filtered.slice 0,10
+      """
 
-      if ( criterion > threshold)
-        filtered.push(item)
+        Name:  #{item.name}
+        Type:  #{item.type}
+        Right Ascention:  #{item.ra}
+        Declenation:  #{item.dec}
+        Today: #{item.today}
+        Yesterday: #{item.yesterday}
 
-      filtered.slice(0,10)
+      """
 
-      for item in filtered
-        output = output + "\nName: " + item.name + 
-        output = output + "\n\nType: " + item.type + 
-        output = output + "\n\nRight Ascention: " + item.ra
-        output = output + "\n\nDeclenation: " + item.dec
-        output = output + "\n\nToday: " + item.today
-        output = output + "\n\nYesterday: " + item.yesterday
+    """
+      New transient space events
 
-    output
+      #{infoArray.join ''}
+    """
 
 
 module.exports = EmailContent

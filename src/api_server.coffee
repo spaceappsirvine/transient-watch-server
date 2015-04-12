@@ -53,7 +53,7 @@ class ApiServer
         @redis.quit()
 
 
-  removeDuplicates = (ar) ->
+  removeDuplicates: (ar) ->
     if ar.length == 0
       return []
     res = {}

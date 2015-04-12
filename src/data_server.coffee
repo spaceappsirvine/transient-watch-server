@@ -15,7 +15,6 @@ class DataServer
 
   start: ->
     @tick (->), true
-    # setInterval (=> @tick (->), true), INTERVAL
 
 
   tick: (callback = (->), refresh = false) ->
@@ -71,12 +70,12 @@ class DataServer
           when 12 then 'days'
           when 13 then 'lastdays'
         if cellIndex is 2
-          value = cell.find('a').text().replace /\ +(?= )/g, ''
+          value = cell.find('a').first().text().replace /\ +(?= )/g, ''
         else
           value = cell.html()
-        cellData[propertyName] = value.trim()
+        cellData[propertyName] = if value? then value.trim() else ''
         cell = cell.next()
-      structures.push cellData
+      structures.push cellData if cellData.name
     @redis.set KEY_EVENT, JSON.stringify structures
     structures
 

@@ -39,7 +39,7 @@ class ApiServer
     {uuid} = request.query
     @redis.get uuid, (err, result) =>
       result = JSON.parse(result or '[]')
-      @_eventData (data) ->
+      @_eventData (data) =>
         final = []
         for item in result
           for event in data when item.name is event.name

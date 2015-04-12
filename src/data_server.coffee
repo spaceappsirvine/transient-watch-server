@@ -6,7 +6,7 @@ EmailContent = require './email_content'
 EmailService = require './email_service'
 
 TIMEOUT = 5000 # 5 Second Timeout
-INTERVAL = 60 * 60 * 1000 # 1 Hour
+INTERVAL = 60 * 5 * 1000 # 5 Minutes
 ONE_DAY = 24 * 60 * 60 * 1000 # 1 Day
 KEY_EVENT = 'events'
 
@@ -19,6 +19,12 @@ class DataServer
 
   start: ->
     @tick (->), true
+
+    # Run Every 5 Minutes
+    setInterval ->
+      console.log 'Worker Executing....'
+      @tick (->), true
+    , INTERVAL
 
 
   tick: (onSuccess = (->), refresh = false) ->

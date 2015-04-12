@@ -13,7 +13,6 @@ class ApiServer
   constructor: (@port) ->
     @app = express()
     @_constructRoutes()
-    @_initRedis()
 
 
   start: ->

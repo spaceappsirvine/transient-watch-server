@@ -49,9 +49,17 @@ class ApiServer
 
         response.send
           status: 'success'
-          data: final
+          data: @removeDuplicates final
         @redis.quit()
 
+
+  removeDuplicates = (ar) ->
+    if ar.length == 0
+      return []
+    res = {}
+    for o in ar
+      res[o.name] = o
+    value for _, value of res
 
 
   events: (request, response) =>

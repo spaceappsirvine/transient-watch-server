@@ -13,11 +13,13 @@ KEY_EVENT = 'events'
 class DataServer
 
   constructor: (@source, @testing = false) ->
+    console.log 'Data Server Constructed'
     @emailContent = new EmailContent()
     @emailService = new EmailService()
     @lastSent = Date.now()
 
   start: ->
+    console.log 'Data Server Started'
     @tick (->), true
 
     # Run Every 5 Minutes
@@ -28,6 +30,7 @@ class DataServer
 
 
   tick: (onSuccess = (->), refresh = false) ->
+    console.log 'Data Server Tick'
     @_initRedis()
     if refresh
       @loadFromSource onSuccess

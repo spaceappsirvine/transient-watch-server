@@ -15,6 +15,7 @@ class DataServer
   constructor: (@source) ->
     @emailContent = new EmailContent()
     @emailService = new EmailService()
+    @lastSent = Date.now()
 
   start: ->
     @tick (->), true
@@ -68,23 +69,20 @@ class DataServer
         cell = cell.next()
       structures.push cellData if cellData.name
     @redis.set KEY_EVENT, JSON.stringify structures
+    @mailUsers(structures)
     @redis.quit()
-    if Date.now() - @lastSent > ONE_DAY
-      @lastSent = Date.now()
-      @mailUsers(structures)
     structures
 
 
-  lastSent: Date.now()
-
-
   mailUsers: (data) ->
-    @redis.get 'emails', (result) ->
-      emails = JSON.parse result
-      subject = @emailContent.getSubject @emailService.getDateString()
-      body = @emailContent.getBodyWithData data
-      for user in emails
-        @emailService.send user.email, subject, body
+    if Date.now() - @lastSent > ONE_DAY
+      @lastSent = Date.now()
+      @redis.get 'emails', (result) ->
+        emails = JSON.parse result
+        subject = @emailContent.getSubject @emailService.getDateString()
+        body = @emailContent.getBodyWithData data
+        for user in emails
+          @emailService.send user.email, subject, body
 
 
   _propertyForIndex: (index) ->

@@ -24,7 +24,7 @@ class ApiServer
   bookmark: (request, response) =>
     @_initRedis()
     {uuid, name} = request.body
-    @redis.get uuid, (err, result) ->
+    @redis.get uuid, (err, result) =>
       result ?= '[]'
       favorites = JSON.parse result
       favorites.push {name}

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "serve": "coffee server.coffee"
+    "serve": "coffee server.coffee",
+    "serve api": "coffee server.coffee api",
+    "serve data": "coffee server.coffee data"
   },
   "repository": {
     "type": "git",

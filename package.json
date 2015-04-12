@@ -4,7 +4,7 @@
   "description": "API and Processing Servers for Transient Astronimical Annomolies.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --compilers coffee:coffee-script/register --inline-diffs",
     "serve": "coffee server.coffee",
     "serve api": "coffee server.coffee api",
     "serve data": "coffee server.coffee data"
@@ -37,6 +37,7 @@
     "webshot": "^0.15.4"
   },
   "devDependencies": {
-    "mocha": "^2.2.4"
+    "mocha": "^2.2.4",
+    "chai": "^2.2.0"
   }
 }

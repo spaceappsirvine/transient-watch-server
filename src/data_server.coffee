@@ -12,7 +12,7 @@ KEY_EVENT = 'events'
 
 class DataServer
 
-  constructor: (@source) ->
+  constructor: (@source, @testing = false) ->
     @emailContent = new EmailContent()
     @emailService = new EmailService()
     @lastSent = Date.now()
@@ -68,9 +68,12 @@ class DataServer
         cellData[@_propertyForIndex cellIndex] = if value? then value.trim() else ''
         cell = cell.next()
       structures.push cellData if cellData.name
-    @redis.set KEY_EVENT, JSON.stringify structures
-    @mailUsers(structures)
-    @redis.quit()
+
+    unless @testing
+      @redis.set KEY_EVENT, JSON.stringify structures
+      @mailUsers(structures)
+      @redis.quit()
+
     structures
 
 

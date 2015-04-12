@@ -76,7 +76,7 @@ class DataServer
           value = cell.html()
         cellData[propertyName] = value.trim()
         cell = cell.next()
-        structures.push cellData
+      structures.push cellData
     @redis.set KEY_EVENT, JSON.stringify structures
     structures
 

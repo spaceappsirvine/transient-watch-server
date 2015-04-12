@@ -24,6 +24,7 @@ class ApiServer
       response.set 'Content-Type', 'application/json'
       response.send
         status: 'success'
+        count: data.length
         data: data
 
 

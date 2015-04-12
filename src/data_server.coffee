@@ -44,6 +44,7 @@ class DataServer
         @loadFromSource onSuccess
       else
         onSuccess JSON.parse result
+        @redis.quit()
 
 
   loadFromSource: (onSuccess) ->

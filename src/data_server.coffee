@@ -16,23 +16,23 @@ class DataServer
     @tick (->), true
 
 
-  tick: (callback = (->), refresh = false) ->
+  tick: (onSuccess = (->), refresh = false) ->
     @_initRedis()
     if refresh
-      @loadFromSource callback
+      @loadFromSource onSuccess
     else
-      @loadFromCache callback
+      @loadFromCache onSuccess
 
 
-  loadFromCache: (callback) ->
+  loadFromCache: (onSuccess) ->
     @redis.get KEY_EVENT, (err, result) =>
       if err? or not result
-        @loadFromSource callback
+        @loadFromSource onSuccess
       else
-        callback JSON.parse result
+        onSuccess JSON.parse result
 
 
-  loadFromSource: (callback) ->
+  loadFromSource: (onSuccess) ->
     {port, hostname, pathname} = parse @source
     options =
       hostname: hostname
@@ -43,8 +43,9 @@ class DataServer
     req = http.request options, (res) =>
       data = ''
       res.on 'data', (chunk) -> data += chunk
-      res.on 'end', => callback @process data
+      res.on 'end', => onSuccess @process data
     req.end()
+
 
   process: (data) ->
     $ = cheerio.load data
@@ -55,35 +56,18 @@ class DataServer
       cell = rows.find('td')
       cellData = {}
       for cellIndex in [1..13]
-        propertyName = switch cellIndex
-          when 1 then 'rank'
-          when 2 then 'name'
-          when 3 then 'ra'
-          when 4 then 'dec'
-          when 5 then 'altName'
-          when 6 then 'type'
-          when 7 then 'today'
-          when 8 then 'yesterday'
-          when 9 then 'tenday'
-          when 10 then 'mean'
-          when 11 then 'peak'
-          when 12 then 'days'
-          when 13 then 'lastdays'
         if cellIndex is 2
           value = cell.find('a').first().text().replace /\ +(?= )/g, ''
         else
           value = cell.html()
-        cellData[propertyName] = if value? then value.trim() else ''
+        cellData[@_propertyForIndex cellIndex] = if value? then value.trim() else ''
         cell = cell.next()
       structures.push cellData if cellData.name
     @redis.set KEY_EVENT, JSON.stringify structures
-
+    @redis.quit()
     if Date.now() - @lastSent > 24 * 60 * 60 * 1000
       @lastSent = Date.now()
       @mailUsers(structures)
-    
-    @redis.quit()
-
     structures
 
 
@@ -99,6 +83,24 @@ class DataServer
         err && console.log(err)
       for user in emails when x 
         Notification.notify(user.email, subject, text, callback)
+
+
+  _propertyForIndex: (index) ->
+    switch index
+      when 1 then 'rank'
+      when 2 then 'name'
+      when 3 then 'ra'
+      when 4 then 'dec'
+      when 5 then 'altName'
+      when 6 then 'type'
+      when 7 then 'today'
+      when 8 then 'yesterday'
+      when 9 then 'tenday'
+      when 10 then 'mean'
+      when 11 then 'peak'
+      when 12 then 'days'
+      when 13 then 'lastdays'
+
 
 
   _initRedis: ->

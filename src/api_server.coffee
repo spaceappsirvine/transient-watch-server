@@ -80,7 +80,6 @@ class ApiServer
 
 
   _constructRoutes: ->
-    # Additional Configuration:
     @app.use bodyParser.json()
     @app.use bodyParser.urlencoded extended: true
 
@@ -91,9 +90,9 @@ class ApiServer
     @app.post '/register', @register
 
 
-  _eventData: (callback) ->
+  _eventData: (onSuccess) ->
     server = new DataServer 'http://swift.gsfc.nasa.gov/results/transients/BAT_current.html'
-    server.tick callback
+    server.tick onSuccess
 
 
   _initRedis: ->

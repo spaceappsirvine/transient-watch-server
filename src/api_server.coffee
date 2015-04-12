@@ -21,6 +21,14 @@ class ApiServer
       console.log 'Server is now running.'
 
 
+  bookmark: (request, response) =>
+
+
+
+  bookmarks: (request, response) =>
+
+
+
   events: (request, response) =>
     @_eventData (data) ->
       response.set 'Content-Type', 'application/json'
@@ -91,7 +99,9 @@ class ApiServer
     @app.get '/events', @events
     @app.get '/map', @map
     @app.get '/preview', @preview
+    @app.get '/bookmarks', @bookmarks
     @app.post '/register', @register
+    @app.post '/bookmark', @bookmark
 
 
   _eventData: (onSuccess) ->

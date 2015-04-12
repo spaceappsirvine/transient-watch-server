@@ -40,7 +40,11 @@ class ApiServer
     @redis.get uuid, (err, result) =>
       result = JSON.parse(result or '[]')
       @_eventData (data) ->
-        final = (event for event in data for item in result when item.name is event.name)
+        final = []
+        for item in result
+          for event in data when item.name is event.name
+            final.push event
+
         response.send
           status: 'success'
           data: final

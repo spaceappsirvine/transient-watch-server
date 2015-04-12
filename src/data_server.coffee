@@ -25,7 +25,6 @@ class DataServer
       @loadFromCache callback
 
 
-
   loadFromCache: (callback) ->
     @redis.get KEY_EVENT, (err, result) =>
       if err? or not result

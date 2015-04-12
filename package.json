@@ -32,7 +32,8 @@
     "coffee-script": "^1.9.1",
     "cheerio": "^0.19.0",
     "sleep": "^2.0.0",
-    "redis": "^0.12.1"
+    "redis": "^0.12.1",
+    "body-parser": "^1.12.2"
   },
   "devDependencies": {
     "mocha": "^2.2.4"

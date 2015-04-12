@@ -28,7 +28,7 @@ class ApiServer
       result ?= '[]'
       favorites = JSON.parse result
       favorites.push {name}
-      @redis.set uuid, JSON.stringify favorites, =>
+      @redis.set uuid, JSON.stringify(favorites), =>
         response.send
           status: 'success'
         @redis.quit()
@@ -39,6 +39,7 @@ class ApiServer
     {uuid} = request.query
     console.log uuid
     @redis.get uuid, (err, result) =>
+      console.log err
       console.log result
       result ?= '[]'
       response.send
@@ -82,7 +83,6 @@ class ApiServer
 
   map: (request, response) ->
     fs.readFile 'public/map.html', (err, data) ->
-      throw err if err?
       response.set 'Content-Type', 'text/html'
       response.send data
 

@@ -38,7 +38,7 @@ class ApiServer
   bookmarks: (request, response) =>
     @_initRedis()
     uuid = request.query['uuid']
-    @redis.get uuid, (err, result) ->
+    @redis.get uuid, (err, result) =>
       @redis.quit()
       result ?= '[]'
       response.set 'Content-Type', 'application/json'

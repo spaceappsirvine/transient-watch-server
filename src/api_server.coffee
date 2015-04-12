@@ -36,8 +36,10 @@ class ApiServer
 
   bookmarks: (request, response) =>
     @_initRedis()
-    uuid = request.query['uuid']
+    {uuid} = request.query
+    console.log uuid
     @redis.get uuid, (err, result) =>
+      console.log result
       result ?= '[]'
       response.send
         status: 'success'

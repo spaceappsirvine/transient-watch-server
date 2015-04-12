@@ -2,8 +2,10 @@ DataServer = require './data_server.coffee'
 bodyParser = require 'body-parser'
 express = require 'express'
 fs = require 'fs'
+http = require 'http'
 redis = require 'redis'
 {parse} = require 'url'
+webshot = require 'webshot'
 KEY_EMAILS = 'emails'
 
 class ApiServer
@@ -58,6 +60,25 @@ class ApiServer
       response.send data
 
 
+  preview: (request, response) ->
+    name = "preview-#{request.query['location']}.png"
+    fs.exists name, (exists) ->
+      if exists
+        response.download name
+      else
+        url = "http://galactic-titans.herokuapp.com/map?location=#{request.query['location']}"
+        options =
+          renderDelay: 5000
+          shotOffset:
+            left: 100
+            right: 150
+            top: 100
+            bottom: 100
+        webshot url, name, options, (err) ->
+          unless err?
+            response.download name
+
+
   _constructRoutes: ->
     # Additional Configuration:
     @app.use bodyParser.json()
@@ -66,6 +87,7 @@ class ApiServer
     @app.get '/', @root
     @app.get '/events', @events
     @app.get '/map', @map
+    @app.get '/preview', @preview
     @app.post '/register', @register
 
 

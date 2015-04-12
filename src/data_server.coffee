@@ -14,8 +14,8 @@ class DataServer
 
 
   start: ->
-    @tick()
-    setInterval (=> @tick (->), true), INTERVAL
+    @tick (->), true
+    # setInterval (=> @tick (->), true), INTERVAL
 
 
   tick: (callback = (->), refresh = false) ->

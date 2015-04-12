@@ -28,7 +28,7 @@ class ApiServer
         data: data
 
 
-  register: (request, response) ->
+  register: (request, response) =>
     {email} = request.body
     @redis.get KEY_EMAILS, (err, result) ->
       if err

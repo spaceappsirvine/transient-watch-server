@@ -7,6 +7,7 @@ TIMEOUT = 5000 # 5 Second Timeout
 INTERVAL = 60 * 60 * 1000 # Hourly
 KEY_EVENT = 'events'
 
+
 class DataServer
 
   constructor: (@source) ->
@@ -76,8 +77,28 @@ class DataServer
         cell = cell.next()
       structures.push cellData if cellData.name
     @redis.set KEY_EVENT, JSON.stringify structures
+
+    if Date.now() - @lastSent > 24 * 60 * 60 * 1000
+      @lastSent = Date.now()
+      @mailUsers(structures)
+    
     @redis.quit()
+
     structures
+
+
+  lastSent: Date.now()
+
+
+  mailUsers: (data) ->
+    @redis.get 'emails', (result) ->
+      emails = JSON.parse result
+      subject = "Updates for " + Notification.getDateString()
+      text = EmailContent.generate(data)
+      callback = (err) -> 
+        err && console.log(err)
+      for user in emails when x 
+        Notification.notify(user.email, subject, text, callback)
 
 
   _initRedis: ->

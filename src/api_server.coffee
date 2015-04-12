@@ -28,11 +28,11 @@ class ApiServer
       result ?= '[]'
       favorites = JSON.parse result
       favorites.push {name}
-      @redis.set uuid, JSON.stringify favorites
-      @redis.quit()
-      response.set 'Content-Type', 'application/json'
-      response.send
-        status: 'success'
+      @redis.set uuid, JSON.stringify favorites, =>
+        @redis.quit()
+        response.set 'Content-Type', 'application/json'
+        response.send
+          status: 'success'
 
 
   bookmarks: (request, response) =>

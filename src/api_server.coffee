@@ -30,10 +30,12 @@ class ApiServer
 
   register: (request, response) =>
     {email} = request.body
+    @_initRedis()
     @redis.get KEY_EMAILS, (err, result) =>
       if err
         response.set 'Content-Type', 'application/json'
         response.send status: 'error', code: 500, message: 'Redis Unavailable'
+        @redis.close()
       else
         result ?= '[]'
         emails = JSON.parse result
@@ -42,6 +44,7 @@ class ApiServer
           response.set 'Content-Type', 'application/json'
           response.send
             status: 'success'
+          @redis.close()
 
 
   root: (request, response) ->

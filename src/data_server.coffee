@@ -10,14 +10,13 @@ KEY_EVENT = 'events'
 class DataServer
 
   constructor: (@source) ->
-    @_initRedis()
-
 
   start: ->
     @tick (->), true
 
 
   tick: (callback = (->), refresh = false) ->
+    @_initRedis()
     if refresh
       @loadFromSource callback
     else
@@ -77,6 +76,7 @@ class DataServer
         cell = cell.next()
       structures.push cellData if cellData.name
     @redis.set KEY_EVENT, JSON.stringify structures
+    @redis.close()
     structures
 
 
